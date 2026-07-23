@@ -5,16 +5,106 @@
   min-height: 0;
 }
 
-.app-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
+.app-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
   background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
 }
 
-.app-header p {
-  font-size: 13px;
-  opacity: 0.75;
-  margin-top: 2px;
+.app-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.app-bar__logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--logo-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.app-bar__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.app-bar__right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.app-bar__file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.app-bar__file-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13.5px;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.app-bar__file-info strong {
+  color: var(--text-h);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.app-bar__file-info span {
+  opacity: 0.6;
+}
+
+.app-bar__file button {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 13.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--accent-border);
 }
 
 .app-error {
@@ -28,7 +118,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .app-error button {
@@ -80,7 +170,7 @@
 }
 
 .dropzone__hint {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.6;
 }
 
@@ -91,41 +181,6 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-.file-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-panel);
-  font-size: 13px;
-}
-
-.file-bar__info {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.file-bar__info strong {
-  color: var(--text-h);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-bar button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  flex-shrink: 0;
 }
 
 .workspace__body {
@@ -155,8 +210,9 @@
 
 .editor-toolbar {
   display: flex;
+  align-items: stretch;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
@@ -164,50 +220,126 @@
 
 .toolbar-group {
   display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.toolbar-group__row {
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
-.toolbar-group button,
-.toolbar-group select {
-  padding: 5px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text-h);
-  font-size: 13px;
+.toolbar-group__label {
+  font-size: 11px;
+  color: var(--label-strong);
+  text-align: center;
+  letter-spacing: 0.06em;
 }
 
-.toolbar-group button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.toolbar-divider {
+  width: 1px;
+  background: var(--border);
+  align-self: stretch;
 }
 
 .toolbar-group--export {
   margin-left: auto;
 }
 
+.toolbar-btn {
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 14px;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  border-color: var(--accent-border);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar-btn--zoom {
+  width: 34px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.toolbar-btn--icon {
+  width: 38px;
+  padding: 0;
+  font-size: 15px;
+}
+
+.toolbar-btn--wide {
+  padding: 0 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.toolbar-btn--primary {
+  border: none;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  font-weight: var(--btn-primary-weight);
+  font-size: 13.5px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.toolbar-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.toolbar-select {
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 13px;
+  font-family: inherit;
+}
+
 .zoom-readout {
-  font-family: var(--mono);
-  font-size: 12px;
-  min-width: 44px;
-  text-align: center;
-  opacity: 0.75;
+  height: 30px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  font-size: 13px;
+  color: var(--text-h);
+  background: var(--readout-bg);
+  border-radius: 7px;
 }
 
 .quality-readout {
-  font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   min-width: 34px;
-  opacity: 0.75;
+  color: var(--text-h);
 }
 
 .size-readout {
-  font-family: var(--mono);
-  font-size: 12px;
+  font-size: 12.5px;
   min-width: 64px;
   color: var(--text-h);
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
 .size-readout.is-estimating {
@@ -235,13 +367,33 @@
   image-rendering: pixelated;
 }
 
+.canvas-info-chip {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .canvas-info-chip {
+    background: rgba(24, 25, 32, 0.92);
+  }
+}
+
 .editor-loading {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 14px;
   opacity: 0.7;
 }
 
@@ -255,50 +407,139 @@
   color: var(--warning);
 }
 
-.editor-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 4px 20px;
-  padding: 10px 16px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-panel);
-}
-
 .slider-row {
   display: grid;
-  grid-template-columns: 90px 1fr 52px;
+  grid-template-columns: 96px 1fr 48px;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  padding: 3px 0;
+  font-size: 13px;
 }
 
 .slider-row input[type="range"] {
   width: 100%;
+  accent-color: var(--accent);
 }
 
 .slider-value {
-  font-family: var(--mono);
   text-align: right;
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
-/* ---------- Side panel (MetadataPanel + ExifToolPanel) ---------- */
+.slider-value--changed {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* ---------- Adjust panel (side panel "調整" tab) ---------- */
+
+.adjust-panel {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adjust-panel__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.adjust-auto-btn,
+.adjust-reset-btn {
+  flex: 1;
+  height: 32px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.adjust-auto-btn {
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.adjust-auto-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.adjust-reset-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.adjust-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--label-strong);
+  letter-spacing: 0.08em;
+}
+
+.adjust-section-label--spaced {
+  margin-top: 8px;
+}
+
+.adjust-hint {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.adjust-hint__accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------- Side panel (Adjust / Metadata / ExifTool tabs) ---------- */
 
 .side-panel {
-  width: 380px;
+  width: 340px;
   flex-shrink: 0;
   overflow-y: auto;
   background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+}
+
+.side-panel__tabs {
+  display: flex;
+  padding: 8px 10px 0;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.side-tab {
+  padding: 8px 12px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+
+.side-tab.is-active {
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.side-tab-content.is-hidden {
+  display: none;
 }
 
 .metadata-panel,
 .exiftool-panel {
   padding: 14px 16px;
-}
-
-.exiftool-panel {
-  border-top: 1px solid var(--border);
   padding-bottom: 40px;
 }
 
@@ -316,7 +557,7 @@
 
 .expand-toggle-btn {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 12px;
   padding: 3px 8px;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -327,13 +568,13 @@
 
 .metadata-loading,
 .metadata-kind {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.7;
   margin-bottom: 8px;
 }
 
 .metadata-error {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--danger);
   background: var(--danger-bg);
   border: 1px solid var(--danger);
@@ -342,7 +583,7 @@
 }
 
 .metadata-warning {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--warning);
   background: var(--warning-bg);
   border-radius: 6px;
@@ -359,7 +600,7 @@
 
 .metadata-group summary {
   padding: 8px 10px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   background: var(--bg);
@@ -376,7 +617,7 @@
 
 .metadata-group summary::before {
   content: "▸";
-  font-size: 10px;
+  font-size: 11px;
   opacity: 0.6;
 }
 
@@ -386,15 +627,14 @@
 
 .metadata-group__count {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.5;
-  font-family: var(--mono);
 }
 
 .metadata-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .metadata-table tr {
@@ -417,15 +657,18 @@
 }
 
 .metadata-value {
-  font-family: var(--mono);
   word-break: break-word;
   white-space: pre-wrap;
+}
+
+.metadata-value--mono {
+  font-family: var(--mono);
 }
 
 /* ---------- ExifToolPanel ---------- */
 
 .exiftool-hint {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.7;
   margin: 4px 0 10px;
 }
@@ -438,12 +681,12 @@
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .exiftool-loading,
 .exiftool-success {
-  font-size: 12px;
+  font-size: 13px;
   padding: 8px 10px;
   border-radius: 6px;
   margin-bottom: 8px;
@@ -463,7 +706,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 
@@ -474,7 +717,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exiftool-edit-toolbar {
@@ -490,7 +733,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exiftool-edit-toolbar button.is-active {
@@ -520,7 +763,7 @@
 }
 
 .exiftool-custom-rows h3 {
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   opacity: 0.6;
   margin-bottom: 6px;
@@ -539,7 +782,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 12px;
+  font-size: 13px;
   min-width: 0;
 }
 
@@ -556,7 +799,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exiftool-edit-cell {
@@ -572,8 +815,7 @@
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
-  font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exiftool-edit-cell input.is-deleted {
@@ -589,7 +831,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.7;
 }
 
@@ -613,5 +855,20 @@
 
   .side-panel {
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-bar {
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .app-bar__file {
+    gap: 8px;
+  }
+
+  .app-bar__file-info span {
+    display: none;
   }
 }

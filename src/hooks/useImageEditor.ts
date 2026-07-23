@@ -3,7 +3,6 @@ import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent }
 import type { LoadedFile } from "../lib/metadata/types";
 import { decodeImage } from "../lib/image/decode";
 import { analyzeAutoEnhance } from "../lib/image/autoEnhance";
-import { formatBytes } from "../lib/formatBytes";
 import {
   DEFAULT_ADJUSTMENTS,
   DEFAULT_TRANSFORM,
@@ -24,31 +23,12 @@ interface Viewport {
   panY: number;
 }
 
-interface SliderDef {
-  key: keyof Adjustments;
-  label: string;
-  min: number;
-  max: number;
-  step: number;
-  unit: string;
-}
-
-const SLIDERS: SliderDef[] = [
-  { key: "brightness", label: "明度", min: 0, max: 300, step: 1, unit: "%" },
-  { key: "contrast", label: "コントラスト", min: 0, max: 300, step: 1, unit: "%" },
-  { key: "saturation", label: "彩度", min: 0, max: 300, step: 1, unit: "%" },
-  { key: "hue", label: "色相", min: -180, max: 180, step: 1, unit: "deg" },
-  { key: "grayscale", label: "グレースケール", min: 0, max: 100, step: 1, unit: "%" },
-  { key: "invert", label: "階調反転", min: 0, max: 100, step: 1, unit: "%" },
-  { key: "sepia", label: "セピア", min: 0, max: 100, step: 1, unit: "%" },
-  { key: "blur", label: "ぼかし", min: 0, max: 20, step: 0.5, unit: "px" },
-];
-
-interface Props {
-  file: LoadedFile;
-}
-
-export function ImageEditor({ file }: Props) {
+/**
+ * Owns all image-editing state (decode, adjustments, transform, viewport, export)
+ * so it can be shared between the canvas/toolbar (main area) and the adjustment
+ * sliders (side panel tab), which render in different parts of the tree.
+ */
+export function useImageEditor(file: LoadedFile) {
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [decodeError, setDecodeError] = useState<string | null>(null);
   const [adjustments, setAdjustments] = useState<Adjustments>(DEFAULT_ADJUSTMENTS);
@@ -173,9 +153,17 @@ export function ImageEditor({ file }: Props) {
     setAdjustments((prev) => ({ ...prev, ...result }));
   };
 
+  const resetEdits = () => {
+    setAdjustments(DEFAULT_ADJUSTMENTS);
+    setTransform(DEFAULT_TRANSFORM);
+  };
+
   const rotate = (deg: 90 | 270) => {
     setTransform((prev) => ({ ...prev, rotation: ((prev.rotation + deg) % 360) as Transform["rotation"] }));
   };
+
+  const toggleFlipH = () => setTransform((prev) => ({ ...prev, flipH: !prev.flipH }));
+  const toggleFlipV = () => setTransform((prev) => ({ ...prev, flipV: !prev.flipV }));
 
   const handleDownload = async () => {
     if (!canvasRef.current) return;
@@ -189,116 +177,34 @@ export function ImageEditor({ file }: Props) {
     URL.revokeObjectURL(url);
   };
 
-  if (decodeError) {
-    return <div className="editor-error">{decodeError}</div>;
-  }
-
-  return (
-    <div className="image-editor">
-      <div className="editor-toolbar">
-        <div className="toolbar-group">
-          <button onClick={() => zoomButton(1 / 1.25)} title="縮小">
-            −
-          </button>
-          <span className="zoom-readout">{Math.round(viewport.scale * 100)}%</span>
-          <button onClick={() => zoomButton(1.25)} title="拡大">
-            +
-          </button>
-          <button onClick={fitToContainer}>画面に合わせる</button>
-          <button onClick={() => setViewport((prev) => ({ ...prev, scale: 1 }))}>100%</button>
-        </div>
-        <div className="toolbar-group">
-          <button onClick={applyAutoEnhance} disabled={!bitmap} title="明度/コントラスト/彩度を自動調整">
-            ✨ 自動調整
-          </button>
-          <button onClick={() => rotate(270)} title="反時計回りに90°回転">
-            ⟲ 90°
-          </button>
-          <button onClick={() => rotate(90)} title="時計回りに90°回転">
-            ⟳ 90°
-          </button>
-          <button onClick={() => setTransform((prev) => ({ ...prev, flipH: !prev.flipH }))} title="左右反転">
-            ⇋ 左右
-          </button>
-          <button onClick={() => setTransform((prev) => ({ ...prev, flipV: !prev.flipV }))} title="上下反転">
-            ⇵ 上下
-          </button>
-          <button
-            onClick={() => {
-              setAdjustments(DEFAULT_ADJUSTMENTS);
-              setTransform(DEFAULT_TRANSFORM);
-            }}
-          >
-            編集をリセット
-          </button>
-        </div>
-        <div className="toolbar-group toolbar-group--export">
-          <select value={exportFormat} onChange={(e) => setExportFormat(e.target.value as ExportFormat)}>
-            <option value="png">PNG</option>
-            <option value="jpeg">JPEG</option>
-            <option value="webp">WebP</option>
-          </select>
-          {exportFormat !== "png" && (
-            <>
-              <input
-                type="range"
-                min={0.1}
-                max={1}
-                step={0.01}
-                value={quality}
-                onChange={(e) => setQuality(Number(e.target.value))}
-              />
-              <span className="quality-readout">{Math.round(quality * 100)}%</span>
-            </>
-          )}
-          <span className={`size-readout${estimating ? " is-estimating" : ""}`}>
-            {estimatedSize !== null ? `≈ ${formatBytes(estimatedSize)}` : bitmap ? "計算中…" : ""}
-          </span>
-          <button onClick={handleDownload} disabled={!bitmap}>
-            ダウンロード
-          </button>
-        </div>
-      </div>
-
-      <div
-        className="editor-canvas-wrap"
-        ref={containerRef}
-        onWheel={handleWheel}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-      >
-        {!bitmap && <div className="editor-loading">画像を読み込み中…</div>}
-        <canvas
-          ref={canvasRef}
-          style={{
-            transform: `translate(${viewport.panX}px, ${viewport.panY}px) scale(${viewport.scale})`,
-            transformOrigin: "0 0",
-            visibility: bitmap ? "visible" : "hidden",
-          }}
-        />
-      </div>
-
-      <div className="editor-controls">
-        {SLIDERS.map((s) => (
-          <label className="slider-row" key={s.key}>
-            <span className="slider-label">{s.label}</span>
-            <input
-              type="range"
-              min={s.min}
-              max={s.max}
-              step={s.step}
-              value={adjustments[s.key]}
-              onChange={(e) => updateAdjustment(s.key, Number(e.target.value))}
-            />
-            <span className="slider-value">
-              {adjustments[s.key]}
-              {s.unit}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+  return {
+    bitmap,
+    decodeError,
+    adjustments,
+    updateAdjustment,
+    transform,
+    viewport,
+    exportFormat,
+    setExportFormat,
+    quality,
+    setQuality,
+    estimatedSize,
+    estimating,
+    canvasRef,
+    containerRef,
+    fitToContainer,
+    handleWheel,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    zoomButton,
+    rotate,
+    toggleFlipH,
+    toggleFlipV,
+    applyAutoEnhance,
+    resetEdits,
+    handleDownload,
+  };
 }
+
+export type ImageEditorState = ReturnType<typeof useImageEditor>;

@@ -41,7 +41,10 @@ export async function parseGeneric(file: LoadedFile): Promise<MetadataResult> {
   return {
     groups: [
       { title: "ファイル情報", fields },
-      { title: "先頭バイトプレビュー (hex/ascii)", fields: [{ label: "0x0000-", value: hexPreview(file.bytes) }] },
+      {
+        title: "先頭バイトプレビュー (hex/ascii)",
+        fields: [{ label: "0x0000-", value: hexPreview(file.bytes), mono: true }],
+      },
     ],
     warnings: ["この種類のファイル専用のメタデータパーサーは未対応のため、汎用情報のみ表示しています。"],
   };

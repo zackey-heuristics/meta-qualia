@@ -1,9 +1,9 @@
 :root {
   --text: #4b4b55;
-  --text-h: #08060d;
-  --bg: #f7f7f9;
+  --text-h: #0d0a14;
+  --bg: #f8f7fa;
   --bg-panel: #ffffff;
-  --border: #e0e0e5;
+  --border: #e6e4ee;
   --code-bg: #f4f3ec;
   --accent: #7c3aed;
   --accent-bg: rgba(124, 58, 237, 0.1);
@@ -13,10 +13,18 @@
   --warning: #b45309;
   --warning-bg: rgba(180, 83, 9, 0.1);
 
-  --sans: system-ui, "Segoe UI", "Hiragino Sans", "Noto Sans JP", Roboto, sans-serif;
-  --mono: ui-monospace, "SF Mono", Consolas, monospace;
+  --logo-gradient: linear-gradient(135deg, #7c3aed, #a855f7);
+  --label-strong: #9b98a6;
+  --text-muted: #8a8794;
+  --readout-bg: #f5f4f9;
+  --btn-primary-bg: #7c3aed;
+  --btn-primary-text: #fff;
+  --btn-primary-weight: 600;
 
-  font: 15px/1.5 var(--sans);
+  --sans: "Noto Sans JP", system-ui, "Segoe UI", "Hiragino Sans", Roboto, sans-serif;
+  --mono: "M PLUS 1 Code", ui-monospace, "SF Mono", Consolas, "Noto Sans JP", monospace;
+
+  font: 16px/1.5 var(--sans);
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -41,7 +49,72 @@
     --danger-bg: rgba(248, 113, 113, 0.12);
     --warning: #fbbf24;
     --warning-bg: rgba(251, 191, 36, 0.12);
+
+    --logo-gradient: linear-gradient(135deg, #c084fc, #7c3aed);
+    --label-strong: #6f7180;
+    --text-muted: #8a8c98;
+    --readout-bg: #23242e;
+    --btn-primary-bg: #c084fc;
+    --btn-primary-text: #1a0b2e;
+    --btn-primary-weight: 700;
   }
+}
+
+/*
+ * Explicit theme override from the in-app toggle. These carry higher
+ * specificity than the bare `:root` selectors above (media-query wrapping
+ * doesn't add specificity), so they win over the OS preference whenever
+ * `data-theme` is set on <html>. Values are duplicated from the two blocks
+ * above by design — keep them in sync if the palette changes.
+ */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --text: #4b4b55;
+  --text-h: #0d0a14;
+  --bg: #f8f7fa;
+  --bg-panel: #ffffff;
+  --border: #e6e4ee;
+  --code-bg: #f4f3ec;
+  --accent: #7c3aed;
+  --accent-bg: rgba(124, 58, 237, 0.1);
+  --accent-border: rgba(124, 58, 237, 0.5);
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.1);
+  --warning: #b45309;
+  --warning-bg: rgba(180, 83, 9, 0.1);
+
+  --logo-gradient: linear-gradient(135deg, #7c3aed, #a855f7);
+  --label-strong: #9b98a6;
+  --text-muted: #8a8794;
+  --readout-bg: #f5f4f9;
+  --btn-primary-bg: #7c3aed;
+  --btn-primary-text: #fff;
+  --btn-primary-weight: 600;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --text: #b6b8c0;
+  --text-h: #f3f4f6;
+  --bg: #101116;
+  --bg-panel: #181920;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+
+  --logo-gradient: linear-gradient(135deg, #c084fc, #7c3aed);
+  --label-strong: #6f7180;
+  --text-muted: #8a8c98;
+  --readout-bg: #23242e;
+  --btn-primary-bg: #c084fc;
+  --btn-primary-text: #1a0b2e;
+  --btn-primary-weight: 700;
 }
 
 * {
@@ -68,10 +141,10 @@ h3 {
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 21px;
 }
 h2 {
-  font-size: 15px;
+  font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   opacity: 0.8;

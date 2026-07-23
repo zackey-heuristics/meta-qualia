@@ -120,14 +120,11 @@ export function ExifToolPanel({ file }: { file: LoadedFile }) {
 
   return (
     <div className="exiftool-panel">
-      <div className="exiftool-panel__header">
-        <h2>ExifTool 詳細解析</h2>
-        {status.phase === "idle" && (
-          <p className="exiftool-hint">
-            実際のExifTool(WASM)で全タグを読み取り、自由に編集・削除できます。初回のみ約5MBのダウンロードが発生します(以降はブラウザにキャッシュされます)。
-          </p>
-        )}
-      </div>
+      {status.phase === "idle" && (
+        <p className="exiftool-hint">
+          実際のExifTool(WASM)で全タグを読み取り、自由に編集・削除できます。初回のみ約5MBのダウンロードが発生します(以降はブラウザにキャッシュされます)。
+        </p>
+      )}
 
       {status.phase === "idle" && (
         <button className="exiftool-run-btn" onClick={() => void load()}>

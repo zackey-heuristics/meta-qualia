@@ -36,7 +36,7 @@ function GroupView({
                     {f.value}
                   </a>
                 ) : (
-                  <span className="metadata-value">{f.value}</span>
+                  <span className={`metadata-value${f.mono ? " metadata-value--mono" : ""}`}>{f.value}</span>
                 )}
               </td>
             </tr>
@@ -70,17 +70,16 @@ export function MetadataPanel({ state }: { state: MetadataState }) {
 
   return (
     <div className="metadata-panel">
-      <div className="panel-header">
-        <h2>メタデータ</h2>
-        {state.status === "done" && groups.length > 0 && (
+      {state.status === "done" && groups.length > 0 && (
+        <div className="panel-header">
           <button
             className="expand-toggle-btn"
             onClick={() => setOpenGroups(allOpen ? new Set() : new Set(groups.map((g) => g.title)))}
           >
             {allOpen ? "すべて折りたたむ" : "すべて展開"}
           </button>
-        )}
-      </div>
+        </div>
+      )}
       {state.status === "loading" && <p className="metadata-loading">解析中…</p>}
       {state.status === "error" && <p className="metadata-error">{state.message}</p>}
       {state.status === "done" && (
