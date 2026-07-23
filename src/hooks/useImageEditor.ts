@@ -6,6 +6,7 @@ import { analyzeAutoEnhance } from "../lib/image/autoEnhance";
 import {
   DEFAULT_ADJUSTMENTS,
   DEFAULT_TRANSFORM,
+  estimateExportSize,
   exportCanvas,
   renderToCanvas,
   type Adjustments,
@@ -81,8 +82,8 @@ export function useImageEditor(file: LoadedFile) {
     setEstimating(true);
     const canvas = canvasRef.current;
     const timer = setTimeout(() => {
-      exportCanvas(canvas, exportFormat, quality)
-        .then((blob) => setEstimatedSize(blob.size))
+      estimateExportSize(canvas, exportFormat, quality)
+        .then((size) => setEstimatedSize(size))
         .catch(() => setEstimatedSize(null))
         .finally(() => setEstimating(false));
     }, 300);
