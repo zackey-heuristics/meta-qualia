@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { LoadedFile } from "../lib/metadata/types";
 import type { ExifToolReadResult } from "../lib/exiftool/client";
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 
 type Status =
   | { phase: "idle" }
@@ -28,6 +29,7 @@ export function ExifToolPanel({ file }: { file: LoadedFile }) {
   const [customRows, setCustomRows] = useState<CustomRow[]>([]);
   const [appliedMessage, setAppliedMessage] = useState<string | null>(null);
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+  const { copy, status: copyStatus } = useCopyToClipboard();
 
   const load = async () => {
     setStatus({ phase: "loading" });
@@ -154,6 +156,9 @@ export function ExifToolPanel({ file }: { file: LoadedFile }) {
                 GPS位置を地図で開く
               </a>
             )}
+            <button className="expand-toggle-btn" onClick={() => copy(JSON.stringify(read.raw, null, 2))}>
+              {copyStatus === "copied" ? "コピーしました" : copyStatus === "error" ? "コピー失敗" : "JSONをコピー"}
+            </button>
             <button
               className="expand-toggle-btn"
               onClick={() =>

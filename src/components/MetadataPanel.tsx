@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import type { FileKind, MetadataGroup } from "../lib/metadata";
 import type { MetadataState } from "../hooks/useMetadata";
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
+
+function groupsToJson(groups: MetadataGroup[]): Record<string, Record<string, string>> {
+  const result: Record<string, Record<string, string>> = {};
+  for (const g of groups) {
+    const fields: Record<string, string> = {};
+    for (const f of g.fields) fields[f.label] = f.value;
+    result[g.title] = fields;
+  }
+  return result;
+}
 
 const KIND_LABELS: Record<FileKind, string> = {
   image: "画像",
@@ -49,6 +60,7 @@ function GroupView({
 
 export function MetadataPanel({ state }: { state: MetadataState }) {
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+  const { copy, status: copyStatus } = useCopyToClipboard();
 
   useEffect(() => {
     if (state.status === "done") {
@@ -72,6 +84,12 @@ export function MetadataPanel({ state }: { state: MetadataState }) {
     <div className="metadata-panel">
       {state.status === "done" && groups.length > 0 && (
         <div className="panel-header">
+          <button
+            className="expand-toggle-btn"
+            onClick={() => copy(JSON.stringify(groupsToJson(groups), null, 2))}
+          >
+            {copyStatus === "copied" ? "コピーしました" : copyStatus === "error" ? "コピー失敗" : "JSONをコピー"}
+          </button>
           <button
             className="expand-toggle-btn"
             onClick={() => setOpenGroups(allOpen ? new Set() : new Set(groups.map((g) => g.title)))}
