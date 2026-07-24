@@ -53,8 +53,14 @@ export function renderToCanvas(
   const swapped = transform.rotation === 90 || transform.rotation === 270;
   const width = swapped ? bitmap.height : bitmap.width;
   const height = swapped ? bitmap.width : bitmap.height;
-  canvas.width = width;
-  canvas.height = height;
+  // Assigning canvas.width/height always reallocates the backing pixel buffer,
+  // even when the value is unchanged — skip it for adjustment-only redraws (the
+  // common case while dragging a slider) so those just repaint the existing
+  // buffer instead of reallocating a full-resolution buffer on every tick.
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
 
   const ctx = canvas.getContext("2d");
   if (!ctx) return;

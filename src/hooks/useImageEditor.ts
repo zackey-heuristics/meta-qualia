@@ -69,10 +69,15 @@ export function useImageEditor(file: LoadedFile) {
     };
   }, [file]);
 
-  // Bake adjustments + rotation/flip into the canvas pixel buffer.
+  // Bake adjustments + rotation/flip into the canvas pixel buffer. Coalesced via
+  // rAF so a rapid run of slider onChange events (dragging fires many per second)
+  // triggers at most one full-resolution redraw per frame instead of one each.
   useEffect(() => {
     if (!bitmap || !canvasRef.current) return;
-    renderToCanvas(bitmap, canvasRef.current, adjustments, transform);
+    const rafId = requestAnimationFrame(() => {
+      if (canvasRef.current) renderToCanvas(bitmap, canvasRef.current, adjustments, transform);
+    });
+    return () => cancelAnimationFrame(rafId);
   }, [bitmap, adjustments, transform]);
 
   // Estimate the download size for the current format/quality. Debounced since
