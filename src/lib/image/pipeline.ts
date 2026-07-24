@@ -28,19 +28,26 @@ export interface Transform {
 
 export const DEFAULT_TRANSFORM: Transform = { rotation: 0, flipH: false, flipV: false };
 
+/**
+ * Only includes each CSS filter function when it differs from its no-op value.
+ * Canvas 2D `filter` on WebKit/iOS Safari is backed by CoreImage, where a longer
+ * filter chain means more intermediate full-resolution passes/buffers — always
+ * emitting all 7 functions (even at neutral values) was expensive enough on large
+ * photos to contribute to iOS Safari's OOM tab reloads. An untouched image now
+ * renders with `filter: none` (a plain drawImage, no CoreImage pipeline at all).
+ */
 export function buildFilterString(a: Adjustments): string {
-  return [
-    `brightness(${a.brightness}%)`,
-    `contrast(${a.contrast}%)`,
-    `saturate(${a.saturation}%)`,
-    `hue-rotate(${a.hue}deg)`,
-    `grayscale(${a.grayscale}%)`,
-    `invert(${a.invert}%)`,
-    `sepia(${a.sepia}%)`,
+  const parts = [
+    a.brightness !== 100 ? `brightness(${a.brightness}%)` : "",
+    a.contrast !== 100 ? `contrast(${a.contrast}%)` : "",
+    a.saturation !== 100 ? `saturate(${a.saturation}%)` : "",
+    a.hue !== 0 ? `hue-rotate(${a.hue}deg)` : "",
+    a.grayscale > 0 ? `grayscale(${a.grayscale}%)` : "",
+    a.invert > 0 ? `invert(${a.invert}%)` : "",
+    a.sepia > 0 ? `sepia(${a.sepia}%)` : "",
     a.blur > 0 ? `blur(${a.blur}px)` : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(" ") : "none";
 }
 
 /** Bakes adjustments + rotation/flip into the canvas's pixel buffer at native resolution. */
