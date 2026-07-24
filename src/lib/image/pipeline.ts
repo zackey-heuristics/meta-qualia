@@ -77,7 +77,11 @@ export function renderToCanvas(
   ctx.translate(width / 2, height / 2);
   ctx.rotate((transform.rotation * Math.PI) / 180);
   ctx.scale(transform.flipH ? -1 : 1, transform.flipV ? -1 : 1);
-  ctx.filter = buildFilterString(adjustments);
+  // Only touch ctx.filter when something is actually active — contexts already
+  // default to "none", and avoids relying on assigning that value back being a
+  // true no-op on every engine.
+  const filterString = buildFilterString(adjustments);
+  if (filterString !== "none") ctx.filter = filterString;
   ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
   ctx.restore();
 }

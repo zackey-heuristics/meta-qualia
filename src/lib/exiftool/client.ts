@@ -1,4 +1,4 @@
-import { parseMetadata, writeMetadata } from "@uswriting/exiftool";
+import { dispose, parseMetadata, writeMetadata } from "@uswriting/exiftool";
 import type { LoadedFile } from "../metadata/types";
 import { cachedFetch } from "./wasmCache";
 import { dmsToDecimal } from "./dms";
@@ -42,11 +42,22 @@ function toBinaryfile(file: LoadedFile) {
 
 /** Runs real ExifTool (via WASM) and returns every tag it finds, grouped for display and keyed for editing. */
 export async function extractAllTags(file: LoadedFile): Promise<ExifToolReadResult> {
-  const result = await parseMetadata<Record<string, unknown>[]>(toBinaryfile(file), {
-    args: ["-json", "-G", "-a", "-u"],
-    fetch: cachedFetch,
-    transform: (data) => JSON.parse(data),
-  });
+  let result: Awaited<ReturnType<typeof parseMetadata<Record<string, unknown>[]>>>;
+  try {
+    result = await parseMetadata<Record<string, unknown>[]>(toBinaryfile(file), {
+      args: ["-json", "-G", "-a", "-u"],
+      fetch: cachedFetch,
+      transform: (data) => JSON.parse(data),
+    });
+  } finally {
+    // The library caches its WASM Perl VM indefinitely via WeakRef (kept alive as
+    // long as anything references it, GC timing otherwise unpredictable). On a
+    // memory-constrained mobile tab that's already holding a large decoded photo,
+    // leaving it resident after every use competes with the image editor for
+    // memory and can push the tab over its budget — so drop it immediately,
+    // trading instant re-use for a cold ~1-3s re-init on the next call.
+    await dispose();
+  }
 
   if (!result.success) {
     throw new Error(result.error || "ExifToolの実行に失敗しました。");
@@ -113,7 +124,13 @@ export async function writeTags(file: LoadedFile, edits: TagEdit[]): Promise<Uin
     tags[edit.tag] = edit.value;
   }
 
-  const result = await writeMetadata(toBinaryfile(file), tags, { fetch: cachedFetch });
+  let result: Awaited<ReturnType<typeof writeMetadata>>;
+  try {
+    result = await writeMetadata(toBinaryfile(file), tags, { fetch: cachedFetch });
+  } finally {
+    // See extractAllTags — always release the WASM Perl VM right after use.
+    await dispose();
+  }
   if (!result.success) {
     throw new Error(result.error || "ExifToolでの書き込みに失敗しました。");
   }
